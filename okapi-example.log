@@ -1,0 +1,7 @@
+2019-03-12 19:55:29,069 INFO  ProxyContext         995617/circulation;107361/circulation REQ 172.17.0.16:50497 diku GET /circulation/rules/loan-policy mod-authtoken-2.0.5-SNAPSHOT.42 mod-audit-filter-0.0.6-SNAPSHOT.27 mod-circulation-15.0.0-SNAPSHOT.232 mod-audit-filter-0.0.6-SNAPSHOT.27
+2019-03-12 19:55:29,071 INFO  ProxyContext         995617/circulation;107361/circulation RES 202 1302us mod-authtoken-2.0.5-SNAPSHOT.42 http://10.0.2.15:9142/circulation/rules/loan-policy..
+2019-03-12 19:55:29,075 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage REQ 172.17.0.16:50520 diku GET /circulation-rules-storage mod-authtoken-2.0.5-SNAPSHOT.42 mod-audit-filter-0.0.6-SNAPSHOT.27 mod-circulation-storage-7.0.0-SNAPSHOT.150 mod-audit-filter-0.0.6-SNAPSHOT.27
+2019-03-12 19:55:29,076 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage RES 202 1181us mod-authtoken-2.0.5-SNAPSHOT.42 http://10.0.2.15:9142/circulation-rules-storage
+2019-03-12 19:55:29,082 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage RES 200 6030us mod-circulation-storage-7.0.0-SNAPSHOT.150 http://10.0.2.15:9144/circulation-rules-storage
+2019-03-12 19:55:29,087 INFO  ProxyContext         995617/circulation;107361/circulation RES 200 16412us mod-circulation-15.0.0-SNAPSHOT.232 http://10.0.2.15:9137/circulation/rules/loan-policy..
+
