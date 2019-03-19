@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
 	"sort"
@@ -15,26 +14,6 @@ type callEdge struct {
 
 type callOutput struct {
 	graph []callEdge
-}
-
-func runCall(formatFlag *string, debugFlag *bool) error {
-	olog, err := newOkapiLog(bufio.NewReader(os.Stdin))
-	if err != nil {
-		return err
-	}
-	cg, err := newCallGraph(olog)
-	if err != nil {
-		return err
-	}
-	out := &callOutput{
-		graph: []callEdge{},
-	}
-	cg.prepareOutput(out)
-	graph := out.graph
-	sortByLineno(graph)
-	out.graph = graph
-	write(out)
-	return nil
 }
 
 func sortByLineno(graph []callEdge) {
@@ -127,12 +106,12 @@ func (cg *callGraph) prepareOutput(out *callOutput) {
 	//}
 }
 
-func write(out *callOutput) {
-	fmt.Printf("digraph G {\n")
-	fmt.Printf("    node [shape=record,fontname=\"Helvetica-Bold\",fontcolor=white];\n")
-	fmt.Printf("    rankdir=LR;\n")
-	fmt.Printf("    ordering=out;\n")
-	fmt.Printf("\n")
+func write(out *callOutput, file *os.File) {
+	fmt.Fprintf(file, "digraph G {\n")
+	fmt.Fprintf(file, "    node [shape=record,fontname=\"Helvetica-Bold\",fontcolor=white];\n")
+	fmt.Fprintf(file, "    rankdir=LR;\n")
+	fmt.Fprintf(file, "    ordering=out;\n")
+	fmt.Fprintf(file, "\n")
 	for _, edge := range out.graph {
 		var color1 string
 		var color2 string
@@ -162,23 +141,23 @@ func write(out *callOutput) {
 			}
 		}
 		if edge.rec2 == nil {
-			fmt.Printf("    \"%s\" "+
+			fmt.Fprintf(file, "    \"%s\" "+
 				"[color=%s,fontcolor=white,style=filled];\n", edge.rec1,
 				color1)
 		}
 		if edge.rec2 != nil {
-			//fmt.Printf("    \"%s\" "+
+			//fmt.Fprintf(file, "    \"%s\" "+
 			//        "[color=%s,fontcolor=black,style=bold];\n", edge.rec2,
 			//        color2)
-			fmt.Printf("    edge [color=%s,style=bold];\n",
+			fmt.Fprintf(file, "    edge [color=%s,style=bold];\n",
 				color2)
-			fmt.Printf(
+			fmt.Fprintf(file,
 				"    \"%s\" -> \"%s\" "+
 					"[arrowhead=%s];\n", edge.rec1, edge.rec2,
 				arrowhead)
 		}
 	}
-	fmt.Printf("}\n")
+	fmt.Fprintf(file, "}\n")
 }
 
 type callGraph struct {

@@ -3,8 +3,8 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -126,19 +126,13 @@ func makeOkapiRecord(lineno int, fields []string) (record, error) {
 	}
 }
 
-func newOkapiLog(r *bufio.Reader) (*okapiLog, error) {
+func newOkapiLog(file *os.File) (*okapiLog, error) {
+	scanner := bufio.NewScanner(file)
 	records := []record{}
 	lineno := 0
-	for true {
+	for scanner.Scan() {
 		lineno++
-		s, err := r.ReadString('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-		s = strings.TrimSuffix(s, "\n")
+		s := scanner.Text()
 		if strings.TrimSpace(s) == "" {
 			continue
 		}
@@ -150,6 +144,9 @@ func newOkapiLog(r *bufio.Reader) (*okapiLog, error) {
 			}
 			records = append(records, rec)
 		}
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, err
 	}
 	olog := &okapiLog{
 		records: records,
