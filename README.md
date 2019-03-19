@@ -53,6 +53,12 @@ Running Giraffe
 To generate a call graph from part of an Okapi log:
 
 ```shell
+$ giraffe call -i <input_log_file> -o <output_pdf_file>
+```
+
+For example:
+
+```shell
 $ giraffe call -i okapi-part.log -o okapi-part.pdf
 ```
 
