@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"io"
 	"sort"
 	"strings"
 )
@@ -106,7 +106,8 @@ func (cg *callGraph) prepareOutput(out *callOutput) {
 	//}
 }
 
-func write(out *callOutput, file *os.File) {
+//func write(out *callOutput, file *os.File) {
+func write(out *callOutput, file io.WriteCloser) {
 	fmt.Fprintf(file, "digraph G {\n")
 	fmt.Fprintf(file, "    node [shape=record,fontname=\"Helvetica-Bold\",fontcolor=white];\n")
 	fmt.Fprintf(file, "    rankdir=LR;\n")

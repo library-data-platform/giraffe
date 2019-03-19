@@ -17,8 +17,6 @@ graphs.
 ![Giraffe example](https://github.com/folio-labs/giraffe/blob/master/okapi-example.png "Giraffe example")
 
 
-<!--
-
 System requirements
 -------------------
 
@@ -55,9 +53,7 @@ Running Giraffe
 To generate a call graph from part of an Okapi log:
 
 ```shell
-$ giraffe call -o okapi-part.pdf okapi-part.log
+$ giraffe call -i okapi-part.log -o okapi-part.pdf
 ```
-
--->
 
 

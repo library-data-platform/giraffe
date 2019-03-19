@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
+	"os/exec"
 )
 
 func usage() string {
@@ -23,17 +25,11 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
 	if *outputFlag == "" {
 		return fmt.Errorf("Output file not specified")
 	}
-	var ifile *os.File
-	if *inputFlag == "-" {
-		ifile = os.Stdin
-	} else {
-		var err error
-		ifile, err = os.Open(*inputFlag)
-		if err != nil {
-			return err
-		}
-		defer ifile.Close()
+	ifile, err := os.Open(*inputFlag)
+	if err != nil {
+		return err
 	}
+	defer ifile.Close()
 	olog, err := newOkapiLog(ifile)
 	if err != nil {
 		return err
@@ -49,18 +45,29 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
 	graph := out.graph
 	sortByLineno(graph)
 	out.graph = graph
-	var ofile *os.File
-	if *outputFlag == "-" {
-		ofile = os.Stdout
-	} else {
-		var err error
-		ofile, err = os.Create(*outputFlag)
+	if *formatFlag == "dot" {
+		ofile, err := os.Create(*outputFlag)
 		if err != nil {
 			return err
 		}
 		defer ofile.Close()
+		write(out, ofile)
+	} else {
+		cmd := exec.Command("dot", "-T", *formatFlag, "-o", *outputFlag)
+		pipein, err := cmd.StdinPipe()
+		if err != nil {
+			return err
+		}
+		go func() {
+			defer pipein.Close()
+			write(out, pipein)
+		}()
+		dotout, err := cmd.CombinedOutput()
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("%s", dotout)
 	}
-	write(out, ofile)
 	return nil
 }
 
