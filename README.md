@@ -50,16 +50,24 @@ The compiled executable file `giraffe` should appear in `$GOPATH/bin/`.
 Running Giraffe
 ---------------
 
-To generate a call graph from part of an Okapi log:
-
-```shell
-$ giraffe call -i <input_log_file> -o <output_pdf_file>
-```
-
-For example:
+To generate a call graph in PDF format from part of an Okapi log stored
+in `okapi-part.log`:
 
 ```shell
 $ giraffe call -i okapi-part.log -o okapi-part.pdf
+```
+
+Other output formats `PNG`, `JPEG`, and `DOT` are supported via the `-T`
+flag, for example:
+
+```shell
+$ giraffe call -i okapi-part.log -o okapi-part.png -T png
+```
+
+For more information:
+
+```shell
+$ giraffe help
 ```
 
 

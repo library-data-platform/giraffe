@@ -25,6 +25,12 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
 	if *outputFlag == "" {
 		return fmt.Errorf("Output file not specified")
 	}
+	if *formatFlag != "dot" &&
+		*formatFlag != "pdf" &&
+		*formatFlag != "png" &&
+		*formatFlag != "jpeg" {
+		return fmt.Errorf("Format \"%s\" not supported", *formatFlag)
+	}
 	ifile, err := os.Open(*inputFlag)
 	if err != nil {
 		return err
@@ -89,7 +95,8 @@ func run() error {
 	callCmd := flag.NewFlagSet("call", flag.ExitOnError)
 	callInputFlag := callCmd.String("i", "", "input file name")
 	callOutputFlag := callCmd.String("o", "", "output file name")
-	callFormatFlag := callCmd.String("T", "pdf", "output format")
+	callFormatFlag := callCmd.String("T", "pdf",
+		"\"pdf\", \"png\", \"jpeg\", or \"dot\" output format")
 	callDebugFlag := callCmd.Bool("debug", false, "enable debugging output")
 	// Select command
 	switch os.Args[1] {
