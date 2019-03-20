@@ -57,8 +57,8 @@ in `okapi-part.log`:
 $ giraffe call -i okapi-part.log -o okapi-part.pdf
 ```
 
-Other output formats `PNG`, `JPEG`, and `DOT` are supported via the `-T`
-flag, for example:
+Other output formats PNG, JPEG and DOT are supported via the `-T` flag,
+for example:
 
 ```shell
 $ giraffe call -i okapi-part.log -o okapi-part.png -T png
