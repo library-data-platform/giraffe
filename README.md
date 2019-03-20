@@ -20,9 +20,12 @@ graphs.
 System requirements
 -------------------
 
-* Linux or macOS
+* Linux, macOS, possibly Windows
 * Go 1.10 or later
 * Graphviz
+
+Giraffe has not been tested in Windows, but it may work normally or
+using the "Two Step" method below.
 
 
 Installing Giraffe
@@ -57,8 +60,8 @@ in `okapi-part.log`:
 $ giraffe call -i okapi-part.log -o okapi-part.pdf
 ```
 
-Other output formats PNG, JPEG and DOT are supported via the `-T` flag,
-for example:
+Other output formats, PNG, JPEG and DOT, are supported via the `-T`
+flag, for example:
 
 ```shell
 $ giraffe call -i okapi-part.log -o okapi-part.png -T png
@@ -68,6 +71,20 @@ For more information:
 
 ```shell
 $ giraffe help
+```
+
+
+Running Giraffe in Two Steps
+----------------------------
+
+If the instructions above do not work, for instance in Windows, try
+running Giraffe in two steps using dot:
+
+```shell
+giraffe call -i test.log -o test.dot -T dot
+```
+```shell
+dot -o test.pdf -T pdf test.dot
 ```
 
 
