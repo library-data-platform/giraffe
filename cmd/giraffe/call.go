@@ -5,11 +5,13 @@ import (
 	"io"
 	"sort"
 	"strings"
+
+	"github.com/folio-labs/giraffe/okapilog"
 )
 
 type callEdge struct {
-	rec1 record
-	rec2 record
+	rec1 okapilog.Record
+	rec2 okapilog.Record
 }
 
 type callOutput struct {
@@ -20,8 +22,8 @@ func sortByLineno(graph []callEdge) {
 	sort.Slice(graph, func(i, j int) bool {
 		if graph[i].rec2 == nil {
 			if graph[j].rec2 == nil {
-				return graph[i].rec1.header().lineno >
-					graph[j].rec1.header().lineno
+				return graph[i].rec1.Header().LineNo >
+					graph[j].rec1.Header().LineNo
 			} else {
 				return true
 			}
@@ -29,13 +31,13 @@ func sortByLineno(graph []callEdge) {
 			if graph[j].rec2 == nil {
 				return false
 			} else {
-				if graph[i].rec1.header().lineno ==
-					graph[j].rec1.header().lineno {
-					return graph[i].rec2.header().lineno <
-						graph[j].rec2.header().lineno
+				if graph[i].rec1.Header().LineNo ==
+					graph[j].rec1.Header().LineNo {
+					return graph[i].rec2.Header().LineNo <
+						graph[j].rec2.Header().LineNo
 				} else {
-					return graph[i].rec1.header().lineno >
-						graph[j].rec1.header().lineno
+					return graph[i].rec1.Header().LineNo >
+						graph[j].rec1.Header().LineNo
 				}
 			}
 		}
@@ -43,7 +45,7 @@ func sortByLineno(graph []callEdge) {
 }
 
 func (cg *callGraph) prepareOutput(out *callOutput) {
-	for _, rec := range cg.olog.records {
+	for _, rec := range cg.olog.Records {
 		rec1 := rec
 		out.graph = append(out.graph,
 			callEdge{
@@ -53,15 +55,15 @@ func (cg *callGraph) prepareOutput(out *callOutput) {
 	}
 	for _, records := range cg.calls {
 		for _, rec := range records {
-			n := cg.calls[rec.header().id]
+			n := cg.calls[rec.Header().Id]
 			if len(n) == 0 {
 				continue
 			}
 			switch recv := rec.(type) {
-			case *requestRecord:
+			case *okapilog.Request:
 				for _, s := range n {
 					switch sv := s.(type) {
-					case *requestRecord:
+					case *okapilog.Request:
 						out.graph = append(out.graph,
 							callEdge{
 								rec1: recv,
@@ -73,7 +75,7 @@ func (cg *callGraph) prepareOutput(out *callOutput) {
 		}
 	}
 	for _, rq := range cg.requests {
-		rss, match := cg.responses[rq.id]
+		rss, match := cg.responses[rq.Id]
 		if match {
 			for _, rs := range rss {
 				rec1 := rq
@@ -118,26 +120,26 @@ func write(out *callOutput, file io.WriteCloser, rsTimeFlag *int) {
 		var color2 string
 		var arrowhead string
 		switch v := edge.rec1.(type) {
-		case *requestRecord:
+		case *okapilog.Request:
 			if edge.rec2 == nil {
 				color1 = "forestgreen"
 			} else {
 				switch edge.rec2.(type) {
-				case *requestRecord:
+				case *okapilog.Request:
 					color1 = "forestgreen"
 					color2 = "forestgreen"
 					arrowhead = "normal"
-				case *responseRecord:
+				case *okapilog.Response:
 					color1 = "forestgreen"
 					color2 = "cornflowerblue"
 					arrowhead = "odot"
 				}
 			}
-		case *responseRecord:
+		case *okapilog.Response:
 			if edge.rec2 == nil {
 				color1 = "cornflowerblue"
 				if *rsTimeFlag > 0 &&
-					v.rsTime >= (*rsTimeFlag*1000) {
+					v.RsTime >= (*rsTimeFlag*1000) {
 					color1 = "maroon"
 				}
 			}
@@ -163,17 +165,17 @@ func write(out *callOutput, file io.WriteCloser, rsTimeFlag *int) {
 }
 
 type callGraph struct {
-	olog      *okapiLog
-	calls     map[string][]record
-	requests  map[string]requestRecord
-	responses map[string][]responseRecord
+	olog      *okapilog.Log
+	calls     map[string][]okapilog.Record
+	requests  map[string]okapilog.Request
+	responses map[string][]okapilog.Response
 }
 
-func newCallGraph(olog *okapiLog) (*callGraph, error) {
-	calls := make(map[string][]record)
-	requests := make(map[string]requestRecord)
-	responses := make(map[string][]responseRecord)
-	for _, rec := range olog.records {
+func newCallGraph(olog *okapilog.Log) (*callGraph, error) {
+	calls := make(map[string][]okapilog.Record)
+	requests := make(map[string]okapilog.Request)
+	responses := make(map[string][]okapilog.Response)
+	for _, rec := range olog.Records {
 		storeCall(calls, rec)
 		storeRecord(requests, responses, rec)
 	}
@@ -186,12 +188,12 @@ func newCallGraph(olog *okapiLog) (*callGraph, error) {
 	return cg, nil
 }
 
-func storeCall(calls map[string][]record, rec record) {
-	ids := strings.Split(rec.header().id, ";")
+func storeCall(calls map[string][]okapilog.Record, rec okapilog.Record) {
+	ids := strings.Split(rec.Header().Id, ";")
 	parent := strings.Join(ids[0:len(ids)-1], ";")
 	n := calls[parent]
 	if len(n) == 0 {
-		nn := make([]record, 1)
+		nn := make([]okapilog.Record, 1)
 		nn[0] = rec
 		calls[parent] = nn
 	} else {
@@ -200,20 +202,20 @@ func storeCall(calls map[string][]record, rec record) {
 	}
 }
 
-func storeRecord(requests map[string]requestRecord,
-	responses map[string][]responseRecord, rec record) {
+func storeRecord(requests map[string]okapilog.Request,
+	responses map[string][]okapilog.Response, rec okapilog.Record) {
 	switch recv := rec.(type) {
-	case *requestRecord:
-		requests[recv.id] = *recv
-	case *responseRecord:
-		r, ok := responses[recv.id]
+	case *okapilog.Request:
+		requests[recv.Id] = *recv
+	case *okapilog.Response:
+		r, ok := responses[recv.Id]
 		if ok {
 			r = append(r, *recv)
-			responses[recv.id] = r
+			responses[recv.Id] = r
 		} else {
-			n := []responseRecord{}
+			n := []okapilog.Response{}
 			n = append(n, *recv)
-			responses[recv.id] = n
+			responses[recv.Id] = n
 		}
 	}
 }

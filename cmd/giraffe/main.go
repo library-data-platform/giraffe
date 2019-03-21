@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/folio-labs/giraffe/okapilog"
 )
 
 func usage() string {
@@ -37,7 +39,7 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool,
 		return err
 	}
 	defer ifile.Close()
-	olog, err := newOkapiLog(ifile)
+	olog, err := okapilog.NewLog(ifile)
 	if err != nil {
 		return err
 	}

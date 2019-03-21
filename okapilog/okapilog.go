@@ -9,104 +9,104 @@ import (
 	"strings"
 )
 
-type recordHeader struct {
-	lineno   int
-	datetime string
-	level    string
-	id       string
+type Record interface {
+	Header() *RecordHeader
 }
 
-type requestRecord struct {
-	recordHeader
-	addr     string
-	tenant   string
-	method   string
-	resource string
-	params   []string
+type RecordHeader struct {
+	LineNo   int
+	DateTime string
+	Level    string
+	Id       string
 }
 
-type responseRecord struct {
-	recordHeader
-	statusCode string
-	rsTime     int
-	params     []string
+type Request struct {
+	RecordHeader
+	Addr     string
+	Tenant   string
+	Method   string
+	Resource string
+	Params   []string
 }
 
-type record interface {
-	header() *recordHeader
-}
-
-func (req *requestRecord) header() *recordHeader {
-	return &recordHeader{
-		lineno:   req.lineno,
-		datetime: req.datetime,
-		level:    req.level,
-		id:       req.id,
+func (req *Request) Header() *RecordHeader {
+	return &RecordHeader{
+		LineNo:   req.LineNo,
+		DateTime: req.DateTime,
+		Level:    req.Level,
+		Id:       req.Id,
 	}
 }
 
-func (req *requestRecord) String() string {
+func (req *Request) String() string {
 	return fmt.Sprintf(
 		"[ %d ]\\n%s %s\\n%s\\nREQ %s %s\\n%s %s\\n%s",
-		req.lineno,
-		req.datetime, req.level,
-		req.id,
-		req.addr, req.tenant,
-		req.method, req.resource,
-		strings.Join(req.params, "\\n"))
+		req.LineNo,
+		req.DateTime, req.Level,
+		req.Id,
+		req.Addr, req.Tenant,
+		req.Method, req.Resource,
+		strings.Join(req.Params, "\\n"))
 }
 
-func (res *responseRecord) header() *recordHeader {
-	return &recordHeader{
-		lineno:   res.lineno,
-		datetime: res.datetime,
-		level:    res.level,
-		id:       res.id,
+type Response struct {
+	RecordHeader
+	StatusCode string
+	RsTime     int
+	Params     []string
+}
+
+func (res *Response) Header() *RecordHeader {
+	return &RecordHeader{
+		LineNo:   res.LineNo,
+		DateTime: res.DateTime,
+		Level:    res.Level,
+		Id:       res.Id,
 	}
 }
 
-func (res *responseRecord) String() string {
-	rsTime := int(math.RoundToEven(float64(res.rsTime) / 1000))
+func (res *Response) String() string {
+	rsTime := int(math.RoundToEven(float64(res.RsTime) / 1000))
 	rsTimeStr := "< 1"
 	if rsTime > 0 {
 		rsTimeStr = fmt.Sprintf("%d", rsTime)
 	}
 	return fmt.Sprintf(
 		"[ %d ]\\n%s %s\\n%s\\nRES %s ( %s ms )\\n%s",
-		res.lineno,
-		res.datetime, res.level,
-		res.id,
-		res.statusCode, rsTimeStr,
-		strings.Join(res.params, "\\n"))
+		res.LineNo,
+		res.DateTime, res.Level,
+		res.Id,
+		res.StatusCode, rsTimeStr,
+		strings.Join(res.Params, "\\n"))
 }
 
-type okapiLog struct {
-	records []record
+type Log struct {
+	Records []Record
 }
 
-func makeHeader(lineno int, fields []string) recordHeader {
+func makeHeader(lineno int, fields []string) RecordHeader {
 	datetime := fields[0] + " " + fields[1]
 	level := fields[2]
 	id := fields[4]
-	return recordHeader{
-		lineno:   lineno,
-		datetime: datetime,
-		level:    level,
-		id:       id,
+	return RecordHeader{
+		LineNo:   lineno,
+		DateTime: datetime,
+		Level:    level,
+		Id:       id,
 	}
 }
 
-func makeOkapiRecord(lineno int, fields []string) (record, error) {
+func makeRecord(lineno int, fields []string) (Record, error) {
 	pdutype := fields[5]
 	switch pdutype {
 	case "REQ":
-		return &requestRecord{
-			recordHeader: makeHeader(lineno, fields),
-			addr:         fields[6],
-			tenant:       fields[7],
-			method:       fields[8],
-			resource:     fields[9],
-			params:       fields[10:],
+		return &Request{
+			RecordHeader: makeHeader(lineno, fields),
+			Addr:         fields[6],
+			Tenant:       fields[7],
+			Method:       fields[8],
+			Resource:     fields[9],
+			Params:       fields[10:],
 		}, nil
 	case "RES":
 		rsTimeStr := strings.TrimSuffix(fields[7], "us")
@@ -115,20 +115,20 @@ func makeOkapiRecord(lineno int, fields []string) (record, error) {
 			return nil, fmt.Errorf("Invalid response time '%s'",
 				rsTimeStr)
 		}
-		return &responseRecord{
-			recordHeader: makeHeader(lineno, fields),
-			statusCode:   fields[6],
-			rsTime:       rsTime,
-			params:       fields[8:],
+		return &Response{
+			RecordHeader: makeHeader(lineno, fields),
+			StatusCode:   fields[6],
+			RsTime:       rsTime,
+			Params:       fields[8:],
 		}, nil
 	default:
 		return nil, fmt.Errorf("Unknown record type '%s'", pdutype)
 	}
 }
 
-func newOkapiLog(file *os.File) (*okapiLog, error) {
+func NewLog(file *os.File) (*Log, error) {
 	scanner := bufio.NewScanner(file)
-	records := []record{}
+	records := []Record{}
 	lineno := 0
 	for scanner.Scan() {
 		lineno++
@@ -138,7 +138,7 @@ func newOkapiLog(file *os.File) (*okapiLog, error) {
 		}
 		fields := strings.Fields(s)
 		if len(fields) > 3 && fields[3] == "ProxyContext" {
-			rec, err := makeOkapiRecord(lineno, fields)
+			rec, err := makeRecord(lineno, fields)
 			if err != nil {
 				return nil, err
 			}
@@ -148,8 +148,8 @@ func newOkapiLog(file *os.File) (*okapiLog, error) {
 	if err := scanner.Err(); err != nil {
 		return nil, err
 	}
-	olog := &okapiLog{
-		records: records,
+	olog := &Log{
+		Records: records,
 	}
 	return olog, nil
 }
