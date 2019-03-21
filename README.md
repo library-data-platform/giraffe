@@ -67,7 +67,15 @@ flag, for example:
 $ giraffe call -i okapi-part.log -o okapi-part.png -T png
 ```
 
-For more information:
+Giraffe can highlight response timings that exceed a threshold,
+specified in milliseconds.  For example, this will highlight timings of
+at least 250 ms:
+
+```shell
+$ giraffe call -i okapi-part.log -o okapi-part.pdf -timing 250
+```
+
+For more information about command line flags:
 
 ```shell
 $ giraffe help

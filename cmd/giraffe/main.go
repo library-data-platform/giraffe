@@ -18,7 +18,8 @@ func usage() string {
 		"that command.\n"
 }
 
-func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
+func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool,
+	timingFlag *int) error {
 	if *inputFlag == "" {
 		return fmt.Errorf("Input file not specified")
 	}
@@ -57,7 +58,7 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
 			return err
 		}
 		defer ofile.Close()
-		write(out, ofile)
+		write(out, ofile, timingFlag)
 	} else {
 		cmd := exec.Command("dot", "-T", *formatFlag, "-o", *outputFlag)
 		pipein, err := cmd.StdinPipe()
@@ -66,7 +67,7 @@ func runCall(inputFlag, outputFlag, formatFlag *string, debugFlag *bool) error {
 		}
 		go func() {
 			defer pipein.Close()
-			write(out, pipein)
+			write(out, pipein, timingFlag)
 		}()
 		dotout, err := cmd.CombinedOutput()
 		if err != nil {
@@ -98,6 +99,9 @@ func run() error {
 	callFormatFlag := callCmd.String("T", "pdf",
 		"\"pdf\", \"png\", \"jpeg\", or \"dot\" output format")
 	callDebugFlag := callCmd.Bool("debug", false, "enable debugging output")
+	callTimingFlag := callCmd.Int("timing", 0,
+		"highlight timings larger than specified threshold (in "+
+			"milliseconds)")
 	// Select command
 	switch os.Args[1] {
 	case "help":
@@ -130,7 +134,7 @@ func run() error {
 	}
 	if callCmd.Parsed() {
 		err := runCall(callInputFlag, callOutputFlag, callFormatFlag,
-			callDebugFlag)
+			callDebugFlag, callTimingFlag)
 		if err != nil {
 			return err
 		}
