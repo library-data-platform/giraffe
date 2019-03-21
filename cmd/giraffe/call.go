@@ -107,7 +107,7 @@ func (cg *callGraph) prepareOutput(out *callOutput) {
 }
 
 //func write(out *callOutput, file *os.File) {
-func write(out *callOutput, file io.WriteCloser, timingFlag *int) {
+func write(out *callOutput, file io.WriteCloser, rsTimeFlag *int) {
 	fmt.Fprintf(file, "digraph G {\n")
 	fmt.Fprintf(file, "    node [shape=record,fontname=\"Helvetica-Bold\",fontcolor=white];\n")
 	fmt.Fprintf(file, "    rankdir=LR;\n")
@@ -136,8 +136,8 @@ func write(out *callOutput, file io.WriteCloser, timingFlag *int) {
 		case *responseRecord:
 			if edge.rec2 == nil {
 				color1 = "cornflowerblue"
-				if *timingFlag > 0 &&
-					v.timing >= (*timingFlag*1000) {
+				if *rsTimeFlag > 0 &&
+					v.rsTime >= (*rsTimeFlag*1000) {
 					color1 = "maroon"
 				}
 			}

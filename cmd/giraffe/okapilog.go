@@ -28,7 +28,7 @@ type requestRecord struct {
 type responseRecord struct {
 	recordHeader
 	statusCode string
-	timing     int
+	rsTime     int
 	params     []string
 }
 
@@ -66,17 +66,17 @@ func (res *responseRecord) header() *recordHeader {
 }
 
 func (res *responseRecord) String() string {
-	timing := int(math.RoundToEven(float64(res.timing) / 1000))
-	timingStr := "< 1"
-	if timing > 0 {
-		timingStr = fmt.Sprintf("%d", timing)
+	rsTime := int(math.RoundToEven(float64(res.rsTime) / 1000))
+	rsTimeStr := "< 1"
+	if rsTime > 0 {
+		rsTimeStr = fmt.Sprintf("%d", rsTime)
 	}
 	return fmt.Sprintf(
 		"[ %d ]\\n%s %s\\n%s\\nRES %s ( %s ms )\\n%s",
 		res.lineno,
 		res.datetime, res.level,
 		res.id,
-		res.statusCode, timingStr,
+		res.statusCode, rsTimeStr,
 		strings.Join(res.params, "\\n"))
 }
 
@@ -109,16 +109,16 @@ func makeOkapiRecord(lineno int, fields []string) (record, error) {
 			params:       fields[10:],
 		}, nil
 	case "RES":
-		timingStr := strings.TrimSuffix(fields[7], "us")
-		timing, err := strconv.Atoi(timingStr)
+		rsTimeStr := strings.TrimSuffix(fields[7], "us")
+		rsTime, err := strconv.Atoi(rsTimeStr)
 		if err != nil {
-			return nil, fmt.Errorf("Invalid timing value '%s'",
-				timingStr)
+			return nil, fmt.Errorf("Invalid response time '%s'",
+				rsTimeStr)
 		}
 		return &responseRecord{
 			recordHeader: makeHeader(lineno, fields),
 			statusCode:   fields[6],
-			timing:       timing,
+			rsTime:       rsTime,
 			params:       fields[8:],
 		}, nil
 	default:
