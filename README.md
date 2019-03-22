@@ -14,7 +14,7 @@ Overview
 Giraffe is a tool for creating visualizations of Okapi logs such as call
 graphs.
 
-![Giraffe example](https://github.com/folio-labs/giraffe/blob/master/okapi-example.png "Giraffe example")
+![Giraffe example](https://github.com/folio-labs/giraffe/blob/master/example.png "Giraffe example")
 
 
 System requirements
