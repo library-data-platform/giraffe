@@ -54,17 +54,17 @@ Running Giraffe
 ---------------
 
 To generate a call graph in PDF format from part of an Okapi log stored
-in `okapi-part.log`:
+in `sample.log`:
 
 ```shell
-$ giraffe call -i okapi-part.log -o okapi-part.pdf
+$ giraffe call -i sample.log -o sample.pdf
 ```
 
 Other output formats, PNG, JPEG and DOT, are supported via the `-T`
 flag, for example:
 
 ```shell
-$ giraffe call -i okapi-part.log -o okapi-part.png -T png
+$ giraffe call -i sample.log -o sample.png -T png
 ```
 
 Giraffe can highlight response times that meet a specified threshold,
@@ -72,7 +72,7 @@ given in milliseconds.  For example, to highlight response times of at
 least 250 ms:
 
 ```shell
-$ giraffe call -i okapi-part.log -o okapi-part.pdf -rstime 250
+$ giraffe call -i sample.log -o sample.pdf -rstime 250
 ```
 
 For more information about command line flags:
@@ -89,10 +89,10 @@ If the instructions above do not work, for instance in Windows, try
 running Giraffe in two steps using dot:
 
 ```shell
-giraffe call -i test.log -o test.dot -T dot
+giraffe call -i sample.log -o sample.dot -T dot
 ```
 ```shell
-dot -o test.pdf -T pdf test.dot
+dot -o sample.pdf -T pdf sample.dot
 ```
 
 
