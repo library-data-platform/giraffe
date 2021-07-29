@@ -31,23 +31,20 @@ using the "Two Step" method below.
 Installing Giraffe
 ------------------
 
-First ensure that the `GOPATH` environment variable specifies a path
-that can serve as your Go workspace directory, the place where this
-software and other Go packages will be installed.  For example, to set
-it to `$HOME/go`:
+First set the `GOPATH` environment variable to specify a path that can
+serve as the build workspace for Go, e.g.:
 
-```shell
+```bash
 $ export GOPATH=$HOME/go
 ```
 
-Then to download and compile the software (or to retrieve the latest
-updates):
+Then:
 
-```shell
-$ go get -u github.com/folio-labs/giraffe/...
+```bash
+go build ./cmd/giraffe
 ```
 
-The compiled executable file `giraffe` should appear in `$GOPATH/bin/`.
+This builds the `giraffe` executable in the current directory.
 
 
 Running Giraffe
