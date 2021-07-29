@@ -21,7 +21,7 @@ System requirements
 -------------------
 
 * Linux, macOS, possibly Windows
-* Go 1.10 or later
+* Go 1.16 or later
 * Graphviz
 
 Giraffe has not been tested in Windows, but it may work normally or
