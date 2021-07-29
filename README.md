@@ -35,7 +35,7 @@ First set the `GOPATH` environment variable to specify a path that can
 serve as the build workspace for Go, e.g.:
 
 ```bash
-$ export GOPATH=$HOME/go
+export GOPATH=$HOME/go
 ```
 
 Then:
@@ -54,14 +54,14 @@ To generate a call graph in PDF format from part of an Okapi log stored
 in `sample.log`:
 
 ```shell
-$ giraffe call -i sample.log -o sample.pdf
+giraffe call -i sample.log -o sample.pdf
 ```
 
 Other output formats, PNG, JPEG and DOT, are supported via the `-T`
 flag, for example:
 
 ```shell
-$ giraffe call -i sample.log -o sample.png -T png
+giraffe call -i sample.log -o sample.png -T png
 ```
 
 Giraffe can highlight response times that meet a specified threshold,
@@ -69,13 +69,13 @@ given in milliseconds.  For example, to highlight response times of at
 least 250 ms:
 
 ```shell
-$ giraffe call -i sample.log -o sample.pdf -rstime 250
+giraffe call -i sample.log -o sample.pdf -rstime 250
 ```
 
 For more information about command line flags:
 
 ```shell
-$ giraffe help
+giraffe help
 ```
 
 
