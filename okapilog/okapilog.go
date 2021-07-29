@@ -85,9 +85,9 @@ type Log struct {
 }
 
 func makeHeader(lineno int, fields []string) RecordHeader {
-	datetime := fields[0] + " " + fields[1]
-	level := fields[2]
-	id := fields[4]
+	datetime := fields[0]
+	level := fields[1]
+	id := fields[3]
 	return RecordHeader{
 		LineNo:   lineno,
 		DateTime: datetime,
@@ -97,19 +97,19 @@ func makeHeader(lineno int, fields []string) RecordHeader {
 }
 
 func makeRecord(lineno int, fields []string) (Record, error) {
-	pdutype := fields[5]
+	pdutype := fields[4]
 	switch pdutype {
 	case "REQ":
 		return &Request{
 			RecordHeader: makeHeader(lineno, fields),
-			Addr:         fields[6],
-			Tenant:       fields[7],
-			Method:       fields[8],
-			Resource:     fields[9],
-			Params:       fields[10:],
+			Addr:         fields[5],
+			Tenant:       fields[6],
+			Method:       fields[7],
+			Resource:     fields[8],
+			Params:       fields[9:],
 		}, nil
 	case "RES":
-		rsTimeStr := strings.TrimSuffix(fields[7], "us")
+		rsTimeStr := strings.TrimSuffix(fields[6], "us")
 		rsTime, err := strconv.Atoi(rsTimeStr)
 		if err != nil {
 			return nil, fmt.Errorf("Invalid response time '%s'",
@@ -117,9 +117,9 @@ func makeRecord(lineno int, fields []string) (Record, error) {
 		}
 		return &Response{
 			RecordHeader: makeHeader(lineno, fields),
-			StatusCode:   fields[6],
+			StatusCode:   fields[5],
 			RsTime:       rsTime,
-			Params:       fields[8:],
+			Params:       fields[7:],
 		}, nil
 	default:
 		return nil, fmt.Errorf("Unknown record type '%s'", pdutype)
@@ -137,7 +137,7 @@ func NewLog(file *os.File) (*Log, error) {
 			continue
 		}
 		fields := strings.Fields(s)
-		if len(fields) > 3 && fields[3] == "ProxyContext" {
+		if len(fields) > 2 && fields[2] == "ProxyContext" {
 			rec, err := makeRecord(lineno, fields)
 			if err != nil {
 				return nil, err
