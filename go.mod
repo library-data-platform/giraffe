@@ -1,3 +1,3 @@
-module github.com/folio-labs/giraffe
+module github.com/library-data-platform/giraffe
 
-go 1.16
+go 1.18

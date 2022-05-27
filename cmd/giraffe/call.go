@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/folio-labs/giraffe/okapilog"
+	"github.com/library-data-platform/giraffe/okapilog"
 )
 
 type callEdge struct {

@@ -7,7 +7,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/folio-labs/giraffe/okapilog"
+	"github.com/library-data-platform/giraffe/okapilog"
 )
 
 func usage() string {
