@@ -4,7 +4,7 @@ Giraffe
 Copyright (C) 2019-2022 The Open Library Foundation.  This software is
 distributed under the terms of the Apache License, Version 2.0.  See
 the file
-[LICENSE](https://github.com/library-data-platform/giraffe/blob/master/LICENSE)
+[LICENSE](https://github.com/library-data-platform/giraffe/blob/main/LICENSE)
 for more information.
 
 
@@ -14,7 +14,7 @@ Overview
 Giraffe is a tool for creating visualizations of Okapi logs such as call
 graphs.
 
-![Giraffe example](https://github.com/library-data-platform/giraffe/blob/master/example.png "Giraffe example")
+![Giraffe example](https://github.com/library-data-platform/giraffe/blob/main/example.png "Giraffe example")
 
 
 System requirements
