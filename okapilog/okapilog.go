@@ -45,8 +45,8 @@ func (req *Request) String() string {
 		req.DateTime, req.Level,
 		req.Id,
 		req.Addr, req.Tenant,
-		req.Method, req.Resource,
-		strings.Join(req.Params, "\\n"))
+		req.Method, wrapString(req.Resource),
+		strings.Join(wrapStrings(req.Params), "\\n"))
 }
 
 type Response struct {
@@ -77,7 +77,29 @@ func (res *Response) String() string {
 		res.DateTime, res.Level,
 		res.Id,
 		res.StatusCode, rsTimeStr,
-		strings.Join(res.Params, "\\n"))
+		strings.Join(wrapStrings(res.Params), "\\n"))
+}
+
+func wrapStrings(strs []string) []string {
+	var newstrs = make([]string, 0)
+	var str string
+	for _, str = range strs {
+		newstrs = append(newstrs, wrapString(str))
+	}
+	return newstrs
+}
+
+func wrapString(str string) string {
+	const maxlen = 60
+	var b strings.Builder
+	var s = str
+	for len(s) > maxlen {
+		b.WriteString(s[:maxlen])
+		b.WriteRune('\n')
+		s = s[maxlen:]
+	}
+	b.WriteString(s)
+	return b.String()
 }
 
 type Log struct {
@@ -86,8 +108,8 @@ type Log struct {
 
 func makeHeader(lineno int, fields []string) RecordHeader {
 	datetime := fields[0]
-	level := fields[1]
-	id := fields[3]
+	level := fields[5]
+	id := fields[7]
 	return RecordHeader{
 		LineNo:   lineno,
 		DateTime: datetime,
@@ -97,29 +119,35 @@ func makeHeader(lineno int, fields []string) RecordHeader {
 }
 
 func makeRecord(lineno int, fields []string) (Record, error) {
-	pdutype := fields[4]
+	pdutype := fields[8]
 	switch pdutype {
 	case "REQ":
 		return &Request{
 			RecordHeader: makeHeader(lineno, fields),
-			Addr:         fields[5],
-			Tenant:       fields[6],
-			Method:       fields[7],
-			Resource:     fields[8],
-			Params:       fields[9:],
+			Addr:         fields[9],
+			Tenant:       fields[10],
+			Method:       fields[11],
+			Resource:     fields[12],
+			Params:       fields[13:],
 		}, nil
 	case "RES":
-		rsTimeStr := strings.TrimSuffix(fields[6], "us")
-		rsTime, err := strconv.Atoi(rsTimeStr)
-		if err != nil {
-			return nil, fmt.Errorf("Invalid response time '%s'",
-				rsTimeStr)
+		var f = fields[10]
+		var t string
+		if f == "-" {
+			t = "0"
+		} else {
+			t = strings.TrimSuffix(f, "us")
+		}
+		var err error
+		var rsTime int
+		if rsTime, err = strconv.Atoi(t); err != nil {
+			return nil, fmt.Errorf("Invalid response time '%s'", f)
 		}
 		return &Response{
 			RecordHeader: makeHeader(lineno, fields),
-			StatusCode:   fields[5],
+			StatusCode:   fields[9],
 			RsTime:       rsTime,
-			Params:       fields[7:],
+			Params:       fields[11:],
 		}, nil
 	default:
 		return nil, fmt.Errorf("Unknown record type '%s'", pdutype)
@@ -137,7 +165,7 @@ func NewLog(file *os.File) (*Log, error) {
 			continue
 		}
 		fields := strings.Fields(s)
-		if len(fields) > 2 && fields[2] == "ProxyContext" {
+		if len(fields) >= 12 && fields[5] == "INFO" && (fields[8] == "REQ" || fields[8] == "RES") {
 			rec, err := makeRecord(lineno, fields)
 			if err != nil {
 				return nil, err

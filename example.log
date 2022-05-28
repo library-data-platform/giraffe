@@ -1,7 +1,10 @@
-2019-03-12T19:55:29,069 INFO  ProxyContext         995617/circulation;107361/circulation REQ 172.17.0.16:50497 diku GET /circulation/rules/loan-policy mod-authtoken-2.0.5-SNAPSHOT.42 mod-audit-filter-0.0.6-SNAPSHOT.27 mod-circulation-15.0.0-SNAPSHOT.232 mod-audit-filter-0.0.6-SNAPSHOT.27
-2019-03-12T19:55:29,071 INFO  ProxyContext         995617/circulation;107361/circulation RES 202 1302us mod-authtoken-2.0.5-SNAPSHOT.42 http://10.0.2.15:9142/circulation/rules/loan-policy..
-2019-03-12T19:55:29,075 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage REQ 172.17.0.16:50520 diku GET /circulation-rules-storage mod-authtoken-2.0.5-SNAPSHOT.42 mod-audit-filter-0.0.6-SNAPSHOT.27 mod-circulation-storage-7.0.0-SNAPSHOT.150 mod-audit-filter-0.0.6-SNAPSHOT.27
-2019-03-12T19:55:29,076 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage RES 202 1181us mod-authtoken-2.0.5-SNAPSHOT.42 http://10.0.2.15:9142/circulation-rules-storage
-2019-03-12T19:55:29,082 INFO  ProxyContext         995617/circulation;107361/circulation;412264/circulation-rules-storage RES 200 6030us mod-circulation-storage-7.0.0-SNAPSHOT.150 http://10.0.2.15:9144/circulation-rules-storage
-2019-03-12T19:55:29,087 INFO  ProxyContext         995617/circulation;107361/circulation RES 200 16412us mod-circulation-15.0.0-SNAPSHOT.232 http://10.0.2.15:9137/circulation/rules/loan-policy..
-
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users REQ 10.36.10.154:21030 diku GET /bl-users/_self  mod-users-bl-7.3.0-SNAPSHOT.118
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;916746/users REQ 172.17.0.56:41478 diku GET /users  mod-users-18.3.0-SNAPSHOT.191
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;916746/users RES 200 2531us mod-users-18.3.0-SNAPSHOT.191 http://10.36.1.107:9135/users?query=username==kgambrell
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;861434/service-points-users REQ 172.17.0.56:41478 diku GET /service-points-users  mod-inventory-storage-23.1.0-SNAPSHOT.698
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;540454/perms REQ 172.17.0.56:41480 diku GET /perms/users  mod-permissions-6.1.0-SNAPSHOT.150
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;753127/groups REQ 172.17.0.56:41482 diku GET /groups/ad0bc554-d5bc-463c-85d1-5562127ae91b  mod-users-18.3.0-SNAPSHOT.191
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;753127/groups RES 200 1161us mod-users-18.3.0-SNAPSHOT.191 http://10.36.1.107:9135/groups/ad0bc554-d5bc-463c-85d1-5562127ae91b
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;861434/service-points-users RES 200 2875us mod-inventory-storage-23.1.0-SNAPSHOT.698 http://10.36.1.107:9134/service-points-users?query=userId==d09bdd3c-6978-48d2-9518-48707cf8cbd7&limit=1000
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users;540454/perms RES 200 5121us mod-permissions-6.1.0-SNAPSHOT.150 http://10.36.1.107:9137/perms/users?query=userId==d09bdd3c-6978-48d2-9518-48707cf8cbd7
+14:46:14 [] [] [] [] INFO  ?                    359494/bl-users RES 200 12174us mod-users-bl-7.3.0-SNAPSHOT.118 http://10.36.1.107:9184/bl-users/_self
